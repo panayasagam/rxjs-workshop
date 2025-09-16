@@ -107,29 +107,12 @@ export class App implements OnInit, OnDestroy {
         }
         
         if (testResult.details.actualValues.length > 0) {
-          // Format expected values
-          const expectedDisplay = Array.isArray(testResult.details.expectedValues[0]) 
-            ? testResult.details.expectedValues[0] 
-            : testResult.details.expectedValues;
+          // Format expected values with better object display
+          const expectedDisplay = this.formatValuesForDisplay(testResult.details.expectedValues);
+          const actualDisplay = this.formatValuesForDisplay(testResult.details.actualValues);
           
-          // Format actual values
-          const actualDisplay = Array.isArray(testResult.details.actualValues[0]) 
-            ? testResult.details.actualValues[0] 
-            : testResult.details.actualValues;
-          
-          // Check if this is an array emission (single array) or individual emissions
-          const isArrayEmission = testResult.details.expectedValues.length === 1 && 
-                                 Array.isArray(testResult.details.expectedValues[0]);
-          
-          if (isArrayEmission) {
-            // Show as array for exercises that emit a single array
-            this.addTestOutput(`Expected values: [${expectedDisplay.join(', ')}]`);
-            this.addTestOutput(`Actual values: [${actualDisplay.join(', ')}]`);
-          } else {
-            // Show as individual values for exercises that emit one by one
-            this.addTestOutput(`Expected values: ${expectedDisplay.join(', ')}`);
-            this.addTestOutput(`Actual values: ${actualDisplay.join(', ')}`);
-          }
+          this.addTestOutput(`Expected values: ${expectedDisplay}`);
+          this.addTestOutput(`Actual values: ${actualDisplay}`);
         }
         
         if (testResult.details.actualTimings.length > 0) {
@@ -172,6 +155,51 @@ export class App implements OnInit, OnDestroy {
   private addTestOutput(message: string) {
     const timestamp = new Date().toLocaleTimeString();
     this.testOutput.push(`[${timestamp}] ${message}`);
+  }
+
+  private formatValuesForDisplay(values: any[]): string {
+    if (values.length === 0) return '[]';
+    
+    // If it's a single value, format it
+    if (values.length === 1) {
+      return this.formatSingleValue(values[0]);
+    }
+    
+    // If it's multiple values, format each one
+    return `[${values.map(v => this.formatSingleValue(v)).join(', ')}]`;
+  }
+
+  private formatSingleValue(value: any): string {
+    if (value === null) return 'null';
+    if (value === undefined) return 'undefined';
+    if (typeof value === 'string') return `"${value}"`;
+    if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+    
+    if (Array.isArray(value)) {
+      if (value.length === 0) return '[]';
+      if (value.length <= 3) {
+        return `[${value.map(v => this.formatSingleValue(v)).join(', ')}]`;
+      }
+      return `[${value.slice(0, 3).map(v => this.formatSingleValue(v)).join(', ')}, ... (${value.length} total)]`;
+    }
+    
+    if (typeof value === 'object') {
+      const keys = Object.keys(value);
+      if (keys.length === 0) return '{}';
+      
+      // For complex objects, show key structure
+      if (keys.length <= 3) {
+        const pairs = keys.map(key => `${key}: ${this.formatSingleValue(value[key])}`).join(', ');
+        return `{${pairs}}`;
+      }
+      
+      // For large objects, show first few keys
+      const firstKeys = keys.slice(0, 2);
+      const pairs = firstKeys.map(key => `${key}: ${this.formatSingleValue(value[key])}`).join(', ');
+      return `{${pairs}, ... (${keys.length} keys)}`;
+    }
+    
+    return String(value);
   }
 
   protected toggleTestPanel() {
