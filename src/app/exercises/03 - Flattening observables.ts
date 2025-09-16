@@ -2,6 +2,8 @@ import { EMPTY } from 'rxjs';
 import { DataSimulationService } from '../services/data-simulation.service';
 import { Exercise } from './exercise.interface';
 
+const data = new DataSimulationService();
+
 /**
  * Exercise 03: Flattening Observables
  * 
@@ -10,7 +12,7 @@ import { Exercise } from './exercise.interface';
  * 
  * Instructions:
  * 1. Create an Observable that emits user IDs: [1, 2, 3]
- * 2. For each user ID, use `dataService.fetchUser(userId)` to simulate fetching user data
+ * 2. For each user ID, use `data.fetchUser(userId)` to simulate fetching user data
  * 3. Transform the user data to get only the user's name
  * 4. Collect all names into a single array emission
  * 
@@ -23,9 +25,6 @@ import { Exercise } from './exercise.interface';
  * Hint: You'll need to flatten the inner observables and collect the results.
  * Consider using operators like mergeMap, switchMap, or concatMap.
  */
-
-// Create data simulation service instance
-const dataService = new DataSimulationService();
 
 const exercise03 = EMPTY;
 
