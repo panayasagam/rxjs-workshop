@@ -1,2 +1,142 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div class="workshop-container">
+  <header class="workshop-header">
+    <h1>{{ title }}</h1>
+    <p>Interactive RxJS exercises to learn reactive programming</p>
+  </header>
+
+  <div class="workshop-content">
+    <aside class="exercises-sidebar">
+      <h2>Exercises</h2>
+      <div class="exercise-list">
+        <div 
+          *ngFor="let exercise of exercises" 
+          class="exercise-item"
+          [class.active]="activeExercise?.id === exercise.id"
+          (click)="selectExercise(exercise)">
+          <div class="exercise-number">{{ exercise.id }}</div>
+          <div class="exercise-info">
+            <h3>{{ exercise.title }}</h3>
+            <p>{{ exercise.description }}</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="exercise-workspace">
+      <div *ngIf="activeExercise" class="exercise-details">
+        <div class="exercise-header">
+          <h2>Exercise {{ activeExercise.id }}: {{ activeExercise.title }}</h2>
+          <div class="exercise-controls">
+            <button 
+              class="btn btn-primary" 
+              (click)="runExercise()" 
+              [disabled]="isRunning">
+              {{ isRunning ? 'Running...' : 'Run Exercise' }}
+            </button>
+            <button 
+              class="btn btn-secondary" 
+              (click)="stopExercise()" 
+              [disabled]="!isRunning">
+              Stop
+            </button>
+          </div>
+        </div>
+
+        <div class="exercise-output">
+          <!-- Exercise Output Section -->
+          <div class="output-section">
+            <h3>Exercise Output</h3>
+            <div class="output-console">
+              <div *ngFor="let output of exerciseOutput" class="output-line">
+                {{ output }}
+              </div>
+              <div *ngIf="exerciseOutput.length === 0" class="output-placeholder">
+                Click "Run Exercise" to see the output here
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhanced Test Results Panel -->
+        <div class="test-panel-enhanced" [class.has-results]="testResult" [class.passed]="testResult?.passed" [class.failed]="testResult && !testResult.passed">
+          <div class="test-panel-header" (click)="toggleTestPanel()">
+            <div class="test-status-compact">
+              <div class="test-icon-container">
+                <span class="test-icon-small">{{ testResult ? (testResult.passed ? '✅' : '❌') : '🧪' }}</span>
+                <div class="icon-glow" [class.active]="testResult"></div>
+              </div>
+              <div class="test-info">
+                <span class="test-title">{{ testResult ? 'Test Results' : 'Exercise Monitor' }}</span>
+                <span class="test-message-compact">{{ testResult ? testResult.message : 'Ready to analyze your exercise' }}</span>
+              </div>
+            </div>
+            <div class="test-toggle">
+              <div class="toggle-button" [class.expanded]="testPanelExpanded">
+                <span class="toggle-icon">{{ testPanelExpanded ? '▼' : '▶' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="test-panel-content" [class.expanded]="testPanelExpanded">
+            <!-- Test Output -->
+            <div class="test-output-section">
+              <div class="section-header">
+                <h4>Lab Analysis</h4>
+                <div class="section-indicator"></div>
+              </div>
+              <div class="test-console">
+                <div *ngFor="let output of testOutput; let i = index" class="test-output-line" [style.animation-delay]="(i * 0.1) + 's'">
+                  {{ output }}
+                </div>
+                <div *ngIf="testOutput.length === 0" class="test-placeholder">
+                  <div class="placeholder-icon">🧪</div>
+                  <div class="placeholder-text">Exercise analysis will begin when you run the exercise</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Test Summary (only show if we have results) -->
+            <div *ngIf="testResult" class="test-summary-section">
+              <div class="section-header">
+                <h4>Summary</h4>
+                <div class="section-indicator"></div>
+              </div>
+              <div class="test-summary-details">
+                <div class="summary-item" [class.animate]="testResult.details.valuesMatch">
+                  <div class="summary-icon">
+                    <span [class]="testResult.details.valuesMatch ? 'check-icon' : 'cross-icon'">
+                      {{ testResult.details.valuesMatch ? '✓' : '✗' }}
+                    </span>
+                  </div>
+                  <div class="summary-content">
+                    <span class="summary-label">Values</span>
+                    <span class="summary-status" [class.correct]="testResult.details.valuesMatch" [class.incorrect]="!testResult.details.valuesMatch">
+                      {{ testResult.details.valuesMatch ? 'Match' : 'Mismatch' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="summary-item" [class.animate]="testResult.details.timingMatch">
+                  <div class="summary-icon">
+                    <span [class]="testResult.details.timingMatch ? 'check-icon' : 'cross-icon'">
+                      {{ testResult.details.timingMatch ? '✓' : '✗' }}
+                    </span>
+                  </div>
+                  <div class="summary-content">
+                    <span class="summary-label">Timings</span>
+                    <span class="summary-status" [class.correct]="testResult.details.timingMatch" [class.incorrect]="!testResult.details.timingMatch">
+                      {{ testResult.details.timingMatch ? 'Match' : 'Mismatch' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!activeExercise" class="no-exercise">
+        <p>Select an exercise to get started</p>
+      </div>
+    </main>
+  </div>
+</div>

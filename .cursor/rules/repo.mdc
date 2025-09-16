@@ -1,0 +1,27 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+Before anything, read [Readme.md](../../README.md)
+
+## Scaffolding exercises
+- Think of the goal of the exercise
+- Create a TypeScript file for the exercise. It will have instructions, basic layed out code with no implementation, and a default export which will be used as an entrypoint for the exercise
+- The main app component should have a display for all exercises and allow activating one of them.
+- Activating an exercise means using the default export of the exercise as the observable the app will subscribe to
+- If an exercise requires data or any other simulation (e.g. http request, localstorage, etc), make those global to the app so all exercises have access to them
+- Scaffold exercises without the answers. Only a placeholder
+- Placeholders should compile so the app can run
+
+## Location
+Put exercises in the `./src/app/exercises` folder. Files should have a numeric prefix (01, 02, ...) and a description. For example:
+`01 - Observable creation.ts`
+`02 - Mapping an filtering.ts`
+
+## Running commands
+Never use `npm run` commands
+Always use `npx nx` commands
+Never install packages globally
+Never try to run packages from the global scope 
